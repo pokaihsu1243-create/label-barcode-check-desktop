@@ -1,0 +1,4 @@
+# .bat 一定要 CRLF，變成 LF 的話雙擊會閃退噴亂碼
+*.bat text eol=crlf
+*.py  text
+*.md  text

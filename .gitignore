@@ -1,0 +1,17 @@
+# 本機的標籤稿與其衍生檔案（含實際料號），不進版控
+_uploads/
+_fixtures/
+_backups/
+
+# 產生出來的報告
+*_條碼檢查報告.html
+*_條碼檢查報告.pdf
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+
+# 暫存
+*.tmp
+~$*
