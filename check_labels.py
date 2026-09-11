@@ -14,7 +14,7 @@
 判定原則：不確定就說不確定。OK 只給「有兩條互相獨立的證據支持」的列，
 其餘一律 CHECK，並在報告寫清楚是哪一種不確定。
 """
-import sys, os, io, re, math, base64, datetime, webbrowser
+import sys, os, io, re, math, base64, datetime, webbrowser, unicodedata
 from html import escape
 import threading
 
@@ -61,9 +61,21 @@ def ocr_engine():
         return _OCR["e"]
 
 
+def fold_fullwidth(s):
+    """全形折成半形（NFKC）。OCR 模型的字典同時收全形與半形，影像品質差時
+    會吐出全形數字（２7７０…），不折的話會被當成「跟條碼不一致」而誤報。
+    逐字折、且只接受「一個字換一個字而且換出來是 ASCII」的結果，避免
+    ㎏→kg 這類相容分解改變字數，破壞後面字形票數的逐字對位。"""
+    out = []
+    for ch in s:
+        c = unicodedata.normalize("NFKC", ch)
+        out.append(c if len(c) == 1 and c.isascii() else ch)
+    return "".join(out)
+
+
 def norm(s):
-    """比對用的正規化。預設只拿掉空白，不動大小寫與標點。"""
-    s = s or ""
+    """比對用的正規化。先把全形折成半形，預設只拿掉空白，不動大小寫與標點。"""
+    s = fold_fullwidth(s or "")
     if IGNORE_SPACE:
         s = re.sub(r"\s+", "", s)
     if IGNORE_CASE:
