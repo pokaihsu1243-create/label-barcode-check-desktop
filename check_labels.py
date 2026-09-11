@@ -908,7 +908,10 @@ def finalize(r):
         r["verdict"] = "OK" if tx == bc else "NG"
         low = ("；OCR 信心 %.2f 偏低，但有不經 OCR 的模板疊合比對佐證" % r["score"]
                if r["score"] < MIN_SCORE else "")
-        r["reason"] = "%s 全部一致%s" % ("＋".join(names), low)
+        # NG 這句要講清楚「一致的是三條軌彼此」，不是「跟條碼一致」——
+        # 否則 NG 的列上寫著「全部一致」，一眼掃過去會誤以為沒事。
+        agree = " 全部一致" if r["verdict"] == "OK" else " 讀出的印字一致，但與條碼不符"
+        r["reason"] = "%s%s%s" % ("＋".join(names), agree, low)
 
     # 疊合比對的結果寫成人看得懂的一句話（判定本身已在上面用掉這條證據）
     tpl = r.get("tpl", "")
